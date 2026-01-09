@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohitvfx__ Remover | AI Background Removal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Exo+2:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00f3ff;
+            --secondary: #ff00ff;
+            --accent: #00ff9d;
+            --dark: #0a0a1a;
+            --dark-glass: rgba(10, 10, 26, 0.85);
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background-color: var(--dark);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(-45deg, #0a0a1a, #15152b, #1a1a3a, #0f1a2e);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            top: -200px;
+            left: -200px;
+            animation: float 25s infinite ease-in-out;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--secondary);
+            bottom: -150px;
+            right: -100px;
+            animation: float 30s infinite ease-in-out reverse;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent);
+            top: 50%;
+            left: 80%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 20px;
+            background: var(--dark-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            animation: neonFlow 3s linear infinite;
+        }
+
+        @keyframes neonFlow {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        .logo-badge {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.7);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            from { box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
+            to { box-shadow: 0 0 30px rgba(0, 243, 255, 0.8), 0 0 40px rgba(255, 0, 255, 0.4); }
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            min-height: 70vh;
+        }
+
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .right-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 243, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.05), rgba(255, 0, 255, 0.05));
+            z-index: -1;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        .section-title i {
+            font-size: 1.2rem;
+        }
+
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            cursor: pointer;
+            border: 2px dashed var(--glass-border);
+            border-radius: 15px;
+            padding: 40px 20px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.5));
+        }
+
+        .upload-text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .upload-text h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .upload-text p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
+        }
+
+        .preview-container {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .preview-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .preview-images {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .image-box {
+            flex: 1;
+            min-width: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+        }
+
+        .image-label {
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.5);
+            font-size: 0.9rem;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            display: block;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .name-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .history-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .history-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary), var(--secondary));
+            border-radius: 10px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 243, 255, 0.3);
+            transform: translateX(5px);
+        }
+
+        .history-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .history-time {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .history-empty i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+            color: var(--glass-border);
+        }
+
+        .clear-history {
+            align-self: flex-start;
+            margin-top: 10px;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 60px;
+            height: 60px;
+            margin: 40px auto;
+            position: relative;
+        }
+
+        .spinner-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-circle:nth-child(2) {
+            border-top-color: var(--secondary);
+            animation-delay: 0.2s;
+        }
+
+        .spinner-circle:nth-child(3) {
+            border-top-color: var(--accent);
+            animation-delay: 0.4s;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background: var(--dark-glass);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 243, 255, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transform: scale(1);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.hidden .modal-content {
+            transform: scale(0.8);
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            animation: neonFlow 3s linear infinite;
+        }
+
+        .modal-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .modal-text {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .social-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .social-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            text-decoration: none;
+            color: white;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            min-width: 200px;
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .social-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .instagram .social-icon {
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+        }
+
+        .snapchat .social-icon {
+            background: #FFFC00;
+            color: #000;
+        }
+
+        .telegram .social-icon {
+            background: #0088cc;
+        }
+
+        .email .social-icon {
+            background: #EA4335;
+        }
+
+        .social-info {
+            flex: 1;
+        }
+
+        .social-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .social-id {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 2px;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .toast {
+            padding: 15px 25px;
+            border-radius: 12px;
+            background: var(--dark-glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            max-width: 350px;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--accent);
+        }
+
+        .toast-error {
+            border-left: 4px solid #ff4757;
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--primary);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 25px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-link:hover {
+            background: rgba(0, 243, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px 15px;
+            }
+            
+            .logo-badge {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .preview-images {
+                flex-direction: column;
+            }
+            
+            .result-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .name-input {
+                width: 100%;
+            }
+            
+            .social-links {
+                flex-direction: column;
+            }
+            
+            .social-link {
+                min-width: 100%;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .toast-container {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+            }
+            
+            .toast {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-bg"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal-content" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+            <div class="modal-icon"><i class="fas fa-magic"></i></div>
+            <h1 class="modal-title" id="modalTitle">Welcome To Mohitvfx__ Remover</h1>
+            <p class="modal-text">Experience the power of AI background removal with our ultra-smooth, neon-themed interface. Upload any image and watch the background disappear instantly.</p>
+            <button class="btn btn-primary" id="startBtn">
+                <span>Get Started</span>
+                <i class="fas fa-rocket"></i>
+            </button>
+            
+            <div class="social-container">
+                <div class="social-title">Connect With Me</div>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/mohitvfx__?igsh=MTVyY3VsOWhzZW5nNg==" target="_blank" class="social-link instagram">
+                        <div class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="social-info">
+                            <div class="social-name">Instagram</div>
+                            <div class="social-id">@mohitvfx__</div>
+                        </div>
+                    </a>
+                    
+                    <a href="https://www.snapchat.com/add/onlymht07?share_id=XSKlf3FW8QA&locale=en-US" target="_blank" class="social-link snapchat">
+                        <div class="social-icon">
+                            <i class="fab fa-snapchat-ghost"></i>
+                        </div>
+                        <div class="social-info">
+                            <div class="social-name">Snapchat</div>
+                            <div class="social-id">onlymht07</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="logo-badge">Mv</div>
+        <div>
+            <h1 class="title">Mohitvfx__ Remover</h1>
+            <p class="subtitle">AI-powered background removal with neon aesthetics</p>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="left-panel">
+            <div class="glass-card">
+                <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Upload Image</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon"><i class="fas fa-folder-open"></i></div>
+                    <div class="upload-text">
+                        <h3>Drag & Drop Your Image</h3>
+                        <p>or click to browse files (max 15MB)</p>
+                        <p>Supports JPG, PNG, WEBP</p>
+                    </div>
+                    <button class="btn btn-primary" id="browseBtn">
+                        <i class="fas fa-search"></i>
+                        <span>Browse Files</span>
+                    </button>
+                    <input type="file" id="fileInput" class="file-input" accept="image/*">
+                </div>
+            </div>
+
+            <div class="glass-card preview-container" id="previewContainer">
+                <div class="preview-title">
+                    <h2 class="section-title"><i class="fas fa-images"></i> Result Preview</h2>
+                    <button class="btn btn-secondary" id="newUploadBtn">
+                        <i class="fas fa-redo"></i>
+                        <span>New Upload</span>
+                    </button>
+                </div>
+                
+                <div class="preview-images">
+                    <div class="image-box">
+                        <div class="image-label">Original Image</div>
+                        <img id="originalPreview" class="image-preview" src="" alt="Original image">
+                    </div>
+                    <div class="image-box">
+                        <div class="image-label">Background Removed</div>
+                        <img id="resultPreview" class="image-preview" src="" alt="Result image">
+                    </div>
+                </div>
+                
+                <div class="result-actions">
+                    <input type="text" id="imageName" class="name-input" placeholder="Enter image name..." value="processed-image">
+                    <button class="btn btn-primary" id="downloadBtn">
+                        <i class="fas fa-download"></i>
+                        <span>Download</span>
+                    </button>
+                    <button class="btn btn-secondary" id="shareBtn">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2 class="section-title"><i class="fas fa-users"></i> Connect With Me</h2>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/mohitvfx__?igsh=MTVyY3VsOWhzZW5nNg==" target="_blank" class="social-link instagram">
+                        <div class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="social-info">
+                            <div class="social-name">Instagram</div>
+                            <div class="social-id">@mohitvfx__</div>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="opacity: 0.7;"></i>
+                    </a>
+                    
+                    <a href="https://www.snapchat.com/add/onlymht07?share_id=XSKlf3FW8QA&locale=en-US" target="_blank" class="social-link snapchat">
+                        <div class="social-icon">
+                            <i class="fab fa-snapchat-ghost"></i>
+                        </div>
+                        <div class="social-info">
+                            <div class="social-name">Snapchat</div>
+                            <div class="social-id">onlymht07</div>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="opacity: 0.7;"></i>
+                    </a>
+                    
+                    <a href="t.me/MohitOfficialX" target="_blank" class="social-link telegram">
+                        <div class="social-icon">
+                            <i class="fab fa-telegram"></i>
+                        </div>
+                        <div class="social-info">
+                            <div class="social-name">Telegram</div>
+                            <div class="social-id">@MohitOfficialX</div>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="opacity: 0.7;"></i>
+                    </a>
+                    
+                    <a href="mailto:debibabita979@gmail.com" class="social-link email">
+                        <div class="social-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="social-info">
+                            <div class="social-name">Email</div>
+                            <div class="social-id">debibabita979@gmail.com</div>
+                        </div>
+                        <i class="fas fa-external-link-alt" style="opacity: 0.7;"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-circle"></div>
+                <div class="spinner-circle"></div>
+                <div class="spinner-circle"></div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="glass-card">
+                <h2 class="section-title"><i class="fas fa-history"></i> History</h2>
+                <div class="history-container">
+                    <div class="history-list" id="historyList">
+                    </div>
+                    <div class="history-empty" id="emptyHistory">
+                        <i class="fas fa-inbox"></i>
+                        <p>No processed images yet</p>
+                        <p>Your processed images will appear here</p>
+                    </div>
+                </div>
+                <button class="btn btn-secondary clear-history" id="clearHistoryBtn">
+                    <i class="fas fa-trash"></i>
+                    <span>Clear History</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <footer class="footer">
+        <p>Mohitvfx__ Remover • Powered by remove.bg API • Crafted with neon aesthetics</p>
+        
+        <div class="footer-links">
+            <a href="https://www.instagram.com/mohitvfx__?igsh=MTVyY3VsOWhzZW5nNg==" target="_blank" class="footer-link">
+                <i class="fab fa-instagram"></i>
+                Instagram: @mohitvfx__
+            </a>
+            <a href="https://www.snapchat.com/add/onlymht07?share_id=XSKlf3FW8QA&locale=en-US" target="_blank" class="footer-link">
+                <i class="fab fa-snapchat-ghost"></i>
+                Snapchat: onlymht07
+            </a>
+            <a href="t.me/MohitOfficialX" target="_blank" class="footer-link">
+                <i class="fab fa-telegram"></i>
+                Telegram: @MohitOfficialX
+            </a>
+            <a href="mailto:debibabita979@gmail.com" class="footer-link">
+                <i class="fas fa-envelope"></i>
+                Email: debibabita979@gmail.com
+            </a>
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 0.8rem; color: rgba(255, 255, 255, 0.4);">
+            © 2024 Mohitvfx__. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        const REMOVE_BG_API_KEY = "dTfPyK5AGBYJv6G4cRKwx8VS";
+        const API_URL = "https://api.remove.bg/v1.0/removebg";
+        const MAX_FILE_SIZE = 15 * 1024 * 1024;
+
+        const welcomeModal = document.getElementById('welcomeModal');
+        const startBtn = document.getElementById('startBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const previewContainer = document.getElementById('previewContainer');
+        const originalPreview = document.getElementById('originalPreview');
+        const resultPreview = document.getElementById('resultPreview');
+        const imageName = document.getElementById('imageName');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const newUploadBtn = document.getElementById('newUploadBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const historyList = document.getElementById('historyList');
+        const emptyHistory = document.getElementById('emptyHistory');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const toastContainer = document.getElementById('toastContainer');
+
+        let currentImageData = {
+            originalDataUrl: null,
+            resultDataUrl: null,
+            name: "processed-image"
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                welcomeModal.classList.remove('hidden');
+            }, 300);
+
+            loadHistory();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            startBtn.addEventListener('click', () => {
+                welcomeModal.classList.add('hidden');
+            });
+
+            browseBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', handleFileSelect);
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            downloadBtn.addEventListener('click', downloadResult);
+            shareBtn.addEventListener('click', shareResult);
+            newUploadBtn.addEventListener('click', resetUpload);
+            clearHistoryBtn.addEventListener('click', clearHistory);
+            
+            imageName.addEventListener('change', updateImageName);
+            imageName.addEventListener('input', updateImageName);
+
+            document.querySelectorAll('a[href^="mailto:"]').forEach(emailLink => {
+                emailLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const email = 'debibabita979@gmail.com';
+                    navigator.clipboard.writeText(email).then(() => {
+                        showToast('Email copied to clipboard!', 'success');
+                        setTimeout(() => {
+                            window.location.href = `mailto:${email}`;
+                        }, 1000);
+                    }).catch(err => {
+                        window.location.href = `mailto:${email}`;
+                    });
+                });
+            });
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        }
+
+        function handleFile(file) {
+            if (!file.type.match('image.*')) {
+                showToast('Please select a valid image file', 'error');
+                return;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                showToast('File size exceeds 15MB limit. Please choose a smaller image.', 'error');
+                return;
+            }
+
+            loadingSpinner.style.display = 'block';
+            previewContainer.style.display = 'none';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentImageData.originalDataUrl = e.target.result;
+                currentImageData.name = file.name.replace(/\.[^/.]+$/, "");
+                imageName.value = currentImageData.name;
+                
+                originalPreview.src = currentImageData.originalDataUrl;
+                processImageWithAPI(file);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function processImageWithAPI(file) {
+            try {
+                const formData = new FormData();
+                formData.append('image_file', file);
+                formData.append('size', 'auto');
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-Api-Key': REMOVE_BG_API_KEY
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const blob = await response.blob();
+                const resultDataUrl = await blobToDataURL(blob);
+                
+                currentImageData.resultDataUrl = resultDataUrl;
+                currentImageData.timestamp = Date.now();
+                
+                showResultPreview(resultDataUrl);
+                saveToHistory();
+                showToast('Background removed successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error processing image:', error);
+                showToast('Failed to remove background. Please try again.', 'error');
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        function blobToDataURL(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        function showResultPreview(resultDataUrl) {
+            loadingSpinner.style.display = 'none';
+            resultPreview.src = resultDataUrl;
+            previewContainer.style.display = 'flex';
+            previewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function downloadResult() {
+            if (!currentImageData.resultDataUrl) {
+                showToast('No processed image available', 'error');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = currentImageData.resultDataUrl;
+            link.download = `${currentImageData.name || 'processed-image'}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('Image downloaded successfully!', 'success');
+        }
+
+        async function shareResult() {
+            if (!currentImageData.resultDataUrl) {
+                showToast('No processed image available', 'error');
+                return;
+            }
+
+            const response = await fetch(currentImageData.resultDataUrl);
+            const blob = await response.blob();
+            const file = new File([blob], `${currentImageData.name || 'processed-image'}.png`, { type: 'image/png' });
+
+            if (navigator.share && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Background removed image',
+                        text: 'Check out this image with background removed using Mohitvfx__ Remover!'
+                    });
+                } catch (error) {
+                    console.error('Error sharing:', error);
+                    showToast('Sharing failed. You can download the image instead.', 'info');
+                }
+            } else {
+                try {
+                    await navigator.clipboard.writeText('Check out Mohitvfx__ Remover for background removal!');
+                    showToast('Link copied to clipboard!', 'info');
+                } catch (err) {
+                    showToast('Sharing not supported on this device. Download the image instead.', 'info');
+                }
+            }
+        }
+
+        function resetUpload() {
+            previewContainer.style.display = 'none';
+            fileInput.value = '';
+            currentImageData = {
+                originalDataUrl: null,
+                resultDataUrl: null,
+                name: "processed-image"
+            };
+            showToast('Ready for new upload', 'info');
+        }
+
+        function updateImageName() {
+            currentImageData.name = imageName.value || 'processed-image';
+            
+            const history = getHistory();
+            const currentIndex = history.findIndex(item => 
+                item.resultDataUrl === currentImageData.resultDataUrl);
+            
+            if (currentIndex !== -1) {
+                history[currentIndex].name = currentImageData.name;
+                localStorage.setItem('mohitvfx-history', JSON.stringify(history));
+                loadHistory();
+            }
+        }
+
+        function saveToHistory() {
+            const history = getHistory();
+            
+            const existingIndex = history.findIndex(item => 
+                item.resultDataUrl === currentImageData.resultDataUrl);
+            
+            if (existingIndex !== -1) {
+                history[existingIndex] = { ...currentImageData };
+            } else {
+                history.unshift({ ...currentImageData });
+                
+                if (history.length > 50) {
+                    history.pop();
+                }
+            }
+            
+            localStorage.setItem('mohitvfx-history', JSON.stringify(history));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const history = getHistory();
+            
+            if (history.length === 0) {
+                emptyHistory.style.display = 'block';
+                historyList.innerHTML = '';
+                return;
+            }
+            
+            emptyHistory.style.display = 'none';
+            
+            historyList.innerHTML = history.map((item, index) => `
+                <div class="history-item" data-index="${index}">
+                    <img src="${item.resultDataUrl || item.originalDataUrl}" alt="${item.name}" class="history-thumb">
+                    <div class="history-info">
+                        <div class="history-name">${item.name || 'Processed Image'}</div>
+                        <div class="history-time">${formatTime(item.timestamp)}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="icon-btn view-btn" title="View" aria-label="View image">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="icon-btn download-btn" title="Download" aria-label="Download image">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll('.history-item').forEach(item => {
+                const index = parseInt(item.dataset.index);
+                const viewBtn = item.querySelector('.view-btn');
+                const downloadBtn = item.querySelector('.download-btn');
+                
+                item.addEventListener('click', (e) => {
+                    if (!e.target.closest('.icon-btn')) {
+                        loadHistoryItem(index);
+                    }
+                });
+                
+                viewBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    loadHistoryItem(index);
+                });
+                
+                downloadBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    downloadHistoryItem(index);
+                });
+            });
+        }
+
+        function loadHistoryItem(index) {
+            const history = getHistory();
+            if (index >= 0 && index < history.length) {
+                const item = history[index];
+                currentImageData = { ...item };
+                
+                originalPreview.src = item.originalDataUrl;
+                resultPreview.src = item.resultDataUrl;
+                imageName.value = item.name || 'processed-image';
+                
+                previewContainer.style.display = 'flex';
+                loadingSpinner.style.display = 'none';
+                
+                previewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                showToast('Image loaded from history', 'info');
+            }
+        }
+
+        function downloadHistoryItem(index) {
+            const history = getHistory();
+            if (index >= 0 && index < history.length) {
+                const item = history[index];
+                const link = document.createElement('a');
+                link.href = item.resultDataUrl;
+                link.download = `${item.name || 'processed-image'}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Image downloaded from history!', 'success');
+            }
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all history? This action cannot be undone.')) {
+                localStorage.removeItem('mohitvfx-history');
+                loadHistory();
+                showToast('History cleared', 'info');
+            }
+        }
+
+        function getHistory() {
+            try {
+                const historyJson = localStorage.getItem('mohitvfx-history');
+                return historyJson ? JSON.parse(historyJson) : [];
+            } catch (error) {
+                console.error('Error loading history:', error);
+                return [];
+            }
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return 'Unknown time';
+            
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / (1000 * 60));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.setAttribute('role', 'alert');
+            
+            let icon = '💡';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'info') icon = 'ℹ️';
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode === toastContainer) {
+                        toastContainer.removeChild(toast);
+                    }
+                }, 400);
+            }, 5000);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !welcomeModal.classList.contains('hidden')) {
+                welcomeModal.classList.add('hidden');
+            }
+            
+            if (e.key === 'Tab') {
+                document.documentElement.classList.add('keyboard-navigation');
+            }
+        });
+
+        document.addEventListener('mousedown', () => {
+            document.documentElement.classList.remove('keyboard-navigation');
+        });
+    </script>
+</body>
+</html>
